@@ -1,0 +1,7 @@
+# exclude everything
+srts/*
+test_srts/*
+
+# exception to the rule
+!srts/.gitkeep 
+!test_srts/.gitkeep 
