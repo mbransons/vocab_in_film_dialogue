@@ -83,7 +83,7 @@ const genre_cat = [
 const genre_cat_names = genre_cat.map((g) => g.name);
 
 const color_hexs =
-  '#EF9A9A #B71C1C #CE93D8 #4A148C #9FA8DA #283593 #81D4FA #0277BD #80CBC4 #00695C #C5E1A5 #558B2F #FFF59D #F9A825 #FFCC80 #E65100 #5D4037 #757575 #FFAB91';
+  '#B71C1C #EF9A9A #4A148C #CE93D8 #283593 #9FA8DA #0277BD #81D4FA #80CBC4 #00695C #C5E1A5 #558B2F #FFF59D #F9A825 #FFCC80 #E65100 #5D4037 #757575 #FFAB91';
 const color_hex_arr = color_hexs.split(' ');
 
 // declare data variable to assign value after data call
@@ -252,18 +252,7 @@ const xSeven = d3
   .range([0, seven.width()])
   .domain([startDate, endDate]);
 const ySeven = d3.scaleLinear().range([seven.height(), 0]);
-const sevenColors = d3
-  .scaleOrdinal()
-  .range([
-    '#e41a1c',
-    '#377eb8',
-    '#4daf4a',
-    '#984ea3',
-    '#ff7f00',
-    '#ffff33',
-    '#a65628',
-  ])
-  .domain(sevenWords);
+const sevenColors = d3.scaleOrdinal().range(color_hex_arr).domain(sevenWords);
 
 // Seven Words Checkboxes
 function buildSevenCheckboxes(arr) {
@@ -321,7 +310,7 @@ const tipSeven = d3
             d.top_movie_count == d.year_count
               ? `In ${formatYear(
                   d.top_movie[date]
-                )}, <span class="p-1 has-text-weight-semibold is-uppercase">${
+                )}, <span class="has-text-weight-semibold is-uppercase">${
                   d.top_movie.name
                 }</span> accounted for all ${d3.format('~s')(
                   d.year_count
@@ -332,14 +321,12 @@ const tipSeven = d3
                   '~s'
                 )(d.year_count)} occurences of the word "${
                   d.word
-                }" in the ten top grossing films. <span class="p-1 has-text-weight-semibold is-uppercase">${
+                }" in the ten top grossing films. <span class="has-text-weight-semibold is-uppercase">${
                   d.top_movie.name
                 }</span> had the most with ${d3.format('~s')(
                   d.top_movie_count
                 )}.`
           }
-          
-    
     </td>
         </tr>
       </tbody>
