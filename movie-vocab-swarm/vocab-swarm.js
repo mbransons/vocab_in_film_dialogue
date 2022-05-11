@@ -339,6 +339,114 @@ const tipSeven = d3
   });
 gSeven.call(tipSeven);
 
+// SEARCH WORDS VISUALIZATION
+// set margins, width/height
+let wordFindDataArr;
+let findWord = {
+  margin: { top: 0, right: 40, bottom: 34, left: 40 },
+  width: function () {
+    return 1300 - this.margin.left - this.margin.right;
+  },
+  height: function () {
+    return 900 - this.margin.top - this.margin.bottom;
+  },
+};
+
+// use viewBox rather than x and y values so that a aspect ratio is set and the visualization can be responsively scaled
+const svgFind = d3
+  .select('#svganchor-find')
+  .append('svg')
+  .attr(
+    'viewBox',
+    `0 0 ${findWord.width() + findWord.margin.left + findWord.margin.right} ${
+      findWord.height() + findWord.margin.top + findWord.margin.bottom
+    }`
+  );
+
+// Visualization
+// offset a group based on margins so that height and width can be used when building scales
+const gFind = svgFind
+  .append('g')
+  .attr(
+    'transform',
+    `translate(${findWord.margin.left}, ${findWord.margin.top})`
+  );
+const findWords = [];
+const startDateFind = d3.timeDay.offset(parseYear(1927), -80);
+const endDateFind = d3.timeDay.offset(parseYear(2022), 80);
+const xFind = d3
+  .scaleTime()
+  .range([0, findWord.width()])
+  .domain([startDateFind, endDateFind]);
+const yFind = d3.scaleLinear().range([findWord.height(), 0]);
+const findColors = d3.scaleOrdinal().range(color_hex_arr);
+
+//Line Generator
+
+// X Axis
+const xAxisCallFind = d3
+  .axisBottom(xFind)
+  .ticks(30)
+  .tickFormat((d) => formatYear(d));
+
+gFind
+  .append('g')
+  .attr('class', 'x axis')
+  .attr('transform', `translate(0, ${findWord.height()})`)
+  .call(xAxisCallFind);
+
+// SEVEN TOOLTIP
+// ToolTip;
+const tipFind = d3
+  .tip()
+  .attr('class', 'd3-tip')
+  .html((event, d) => {
+    let div = `<div class="box box--tip p-3">
+  <article class="columns is-gapless is-mobile">
+    <div class="column is-4 mr-2">
+      <figure class="image">
+      <img src=${d.top_movie.posterURL}>
+      </figure>
+    </div>
+    <div class="column is-8">
+      <div class="content">
+      <table>
+      <tbody>
+        <tr>
+          <td class="p-1 is-size-7">
+          ${
+            d.top_movie_count == d.year_count
+              ? `In ${formatYear(
+                  d.top_movie[date]
+                )}, <span class="has-text-weight-semibold is-uppercase">${
+                  d.top_movie.name
+                }</span> accounted for all ${d3.format('~s')(
+                  d.year_count
+                )} occurences of the word "${
+                  d.word
+                }" in the ten top grossing films.`
+              : `In ${formatYear(d.top_movie[date])}, there were ${d3.format(
+                  '~s'
+                )(d.year_count)} occurences of the word "${
+                  d.word
+                }" in the ten top grossing films. <span class="has-text-weight-semibold is-uppercase">${
+                  d.top_movie.name
+                }</span> had the most with ${d3.format('~s')(
+                  d.top_movie_count
+                )}.`
+          }
+    </td>
+        </tr>
+      </tbody>
+    </table>
+      </div>
+    </div>
+  </article>
+</div>`;
+    return div;
+  });
+gFind.call(tipFind);
+
 //request to movie database to search for movie
 function search(movie) {
   let movieTitle = movie.Title;
@@ -591,6 +699,96 @@ const dataCall = d3
         .on('mouseout', tipSeven.hide);
     }
     buildSevenWords();
+
+    const findWordForm = document.querySelector('#find-word');
+    findWordForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const wordInput = findWordForm.elements.word;
+      console.log(wordInput.value);
+      findWords.push(wordInput.value);
+      buildFindWords();
+      wordInput.value = '';
+    });
+
+    function buildFindWords() {
+      findWordsDataArr = findWords.map((word) => {
+        return { word: word, data: aggCounts(word, moviesAll) };
+      });
+
+      yFind.domain([0, 200]);
+      findColors.domain(findWords);
+      // Line generator
+      const line = d3
+        .line()
+        .x((d) => xFind(parseYear(d.year)))
+        .y((d) => yFind(d.year_count));
+
+      // Y Axis
+      const yAxisCallFind = d3
+        .axisLeft(yFind)
+        .ticks(10)
+        .tickFormat((d) => `${d}`);
+
+      gFind.append('g').attr('class', 'y axis').call(yAxisCallFind);
+
+      gFind
+        .selectAll('.word-find-path')
+        .data(findWordsDataArr)
+        .enter()
+        .append('path')
+        .attr('id', (d) => d.word)
+        .attr('class', 'word-find-path')
+        .attr('fill', 'none')
+        .attr('stroke', (d) => findColors(d.word))
+        .attr('stroke-width', 3)
+        .attr('d', (d) => line(d.data));
+
+      let hasFindOnly = findWordsDataArr.map((word) => {
+        return {
+          word: word.word,
+          data: word.data.filter((y) => y.year_count > 0),
+        };
+      });
+      let hasFindOnlySpread = hasFindOnly.reduce((acc, word) => {
+        acc = [...acc, ...word.data];
+        return acc;
+      }, []);
+      gFind
+        .selectAll('.find-word-peak')
+        .data(hasFindOnlySpread)
+        .enter()
+        .append('circle')
+        .attr('class', 'find-word-peak')
+        .attr('r', 4)
+        .attr('fill', (d) => findColors(d.word))
+        .attr('cx', (d) => xFind(parseYear(d.year)))
+        .attr('cy', (d) => yFind(d.year_count))
+        .on('mouseover', tipFind.show)
+        .on('mouseout', tipFind.hide);
+
+      // Find Words Checkboxes
+      function buildFindCheckboxes(arr) {
+        let findCheckDiv = document.querySelector('.checkboxes-find-list');
+        while (findCheckDiv.firstChild) {
+          findCheckDiv.removeChild(findCheckDiv.firstChild);
+        }
+        arr.forEach((f, i) => {
+          let find = document.createElement('div');
+          find.classList.add('field', 'my-0', 'mx-1');
+          find.innerHTML = `<input class="is-checkradio has-background-color is-dark is-small" id=${f}
+        value=${f} type="checkbox" name=${f} checked="checked">
+        <label for=${f} class="p-0 is-flex is-align-items-center"><span
+        class="ml-4 pl-1">${f}</span><span id="${f}Color"
+        class="check-dot is-size-7 material-symbols-rounded ml-1" style="color: ${findColors(
+          f
+        )};">
+        circle
+        </span></label>`;
+          findCheckDiv.appendChild(find);
+        });
+      }
+      buildFindCheckboxes(findWords);
+    }
   });
 
 //Count occurences of a word within movie.Words obj
