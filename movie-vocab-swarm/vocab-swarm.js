@@ -316,18 +316,31 @@ const tipSeven = d3
       <table>
       <tbody>
         <tr>
-          <td class="p-1 has-text-weight-semibold is-uppercase is-size-7">${
-            d.top_movie.name
+          <td class="p-1 is-size-7">
+          ${
+            d.top_movie_count == d.year_count
+              ? `In ${formatYear(
+                  d.top_movie[date]
+                )}, <span class="p-1 has-text-weight-semibold is-uppercase">${
+                  d.top_movie.name
+                }</span> accounted for all ${d3.format('~s')(
+                  d.year_count
+                )} occurences of the word "${
+                  d.word
+                }" in the ten top grossing films.`
+              : `In ${formatYear(d.top_movie[date])}, there were ${d3.format(
+                  '~s'
+                )(d.year_count)} occurences of the word "${
+                  d.word
+                }" in the ten top grossing films. <span class="p-1 has-text-weight-semibold is-uppercase">${
+                  d.top_movie.name
+                }</span> had the most with ${d3.format('~s')(
+                  d.top_movie_count
+                )}.`
           }
-          </td>
-        </tr>
-        <tr>
-          <td class="p-1 is-size-7">${formatTime(d.top_movie[date])} </td>
-        </tr>
-        <tr>
-          <td class="p-1 is-size-7">${d.word}: ${d3.format('~s')(
-      d.top_movie_count
-    )}</td>
+          
+    
+    </td>
         </tr>
       </tbody>
     </table>
