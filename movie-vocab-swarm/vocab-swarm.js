@@ -83,11 +83,27 @@ const genre_cat = [
 const genre_cat_names = genre_cat.map((g) => g.name);
 
 const color_hexs =
-  '#EF9A9A #B71C1C #CE93D8 #4A148C #9FA8DA #283593 #81D4FA #0277BD #80CBC4 #00695C #C5E1A5 #558B2F #FFF59D #F9A825 #FFCC80 #E65100 #FFAB91 #5D4037 #757575';
+  '#EF9A9A #B71C1C #CE93D8 #4A148C #9FA8DA #283593 #81D4FA #0277BD #80CBC4 #00695C #C5E1A5 #558B2F #FFF59D #F9A825 #FFCC80 #E65100 #5D4037 #757575 #FFAB91';
 const color_hex_arr = color_hexs.split(' ');
 
 // declare data variable to assign value after data call
 let movies, decade;
+
+function buildGenreCheckboxes(arr) {
+  let genresCheckDiv = document.querySelector('.checkboxes-list');
+  arr.forEach((g, i) => {
+    let genre = document.createElement('div');
+    genre.classList.add('field', 'my-0', 'mx-1');
+    genre.innerHTML = `<input class="is-checkradio has-background-color is-dark is-small" id=${g}
+    value=${g} type="checkbox" name=${g} checked="checked">
+<label for=${g} class="p-0 is-flex is-align-items-center"><span
+        class="ml-4 pl-1">${g}</span><span id="${g}Color"
+        class="check-dot is-size-7 material-symbols-rounded ml-1" style="color: ${color_hex_arr[i]};">
+        circle
+    </span></label>`;
+    genresCheckDiv.appendChild(genre);
+  });
+}
 
 // build checkboxes
 ` <span style="position:relative; top: 3px">Toggle Continents:&nbsp;&nbsp;</span>
@@ -96,6 +112,16 @@ let movies, decade;
     <span class="mdl-checkbox__label" id="africaColor"
         style="font-size: 20px; color: #1976D2;">&#9679;&nbsp;&nbsp;</span>
 </label>`;
+
+`<div class="field my-0 mx-1">
+<input class="is-checkradio has-background-color is-dark is-small" id="Comedy"
+    value="Comedy" type="checkbox" name="Comedy" checked="checked">
+<label for="Comedy" class="p-0 is-flex is-align-items-center"><span
+        class="ml-4 pl-1">Comedy</span><span id="comedyColor"
+        class="check-dot is-size-7 material-symbols-rounded ml-1">
+        circle
+    </span></label>
+</div>`;
 
 //data key names
 const sales = 'adjusted_gross';
@@ -162,8 +188,9 @@ d3.select('#oceaniaColor').style('color', colors('oceania'));
 let svg = d3
   .select('#svganchor')
   .append('svg')
-  .attr('width', width)
-  .attr('height', height);
+  .attr('viewBox', [0, 0, width, height]);
+// .attr('width', width)
+// .attr('height', height);
 
 let xScale = d3.scaleLinear().range([margin.left, width - margin.right]);
 
