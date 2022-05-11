@@ -211,7 +211,7 @@ svg.call(tip);
 // set margins, width/height
 let sevenWordsDataArr;
 let seven = {
-  margin: { top: 0, right: 40, bottom: 34, left: 40 },
+  margin: { top: 10, right: 40, bottom: 34, left: 40 },
   width: function () {
     return 1300 - this.margin.left - this.margin.right;
   },
@@ -343,7 +343,7 @@ gSeven.call(tipSeven);
 // set margins, width/height
 let wordFindDataArr;
 let findWord = {
-  margin: { top: 0, right: 40, bottom: 34, left: 40 },
+  margin: { top: 10, right: 40, bottom: 34, left: 40 },
   width: function () {
     return 1300 - this.margin.left - this.margin.right;
   },
@@ -371,7 +371,7 @@ const gFind = svgFind
     'transform',
     `translate(${findWord.margin.left}, ${findWord.margin.top})`
   );
-const findWords = [];
+let findWords = [];
 const startDateFind = d3.timeDay.offset(parseYear(1927), -80);
 const endDateFind = d3.timeDay.offset(parseYear(2022), 80);
 const xFind = d3
@@ -705,9 +705,23 @@ const dataCall = d3
       e.preventDefault();
       const wordInput = findWordForm.elements.word;
       console.log(wordInput.value);
-      findWords.push(wordInput.value);
+      findWords.push(wordInput.value.toLowerCase());
       buildFindWords();
       wordInput.value = '';
+    });
+
+    const resetFind = document.querySelector('#reset-find');
+    resetFind.addEventListener('click', function () {
+      findWords = [];
+      buildFindWords();
+      let paths = document.querySelectorAll('.word-find-path');
+      let nodes = document.querySelectorAll('.find-word-peak');
+      for (let path of paths) {
+        path.remove();
+      }
+      for (let node of nodes) {
+        node.remove();
+      }
     });
 
     function buildFindWords() {

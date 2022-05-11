@@ -222,14 +222,20 @@
                 <div class="py-4">
                     <h2 class="has-text-centered is-size-4 heading">Find Word Frequencies in Top Ten Films</h2>
                 </div>
-                <form action="#" class="word-frequency-modifiers is-flex is-justify-content-center" id="find-word">
-                    <div class="select is-small is-dark mx-4">
-                        <input class="input is-small is-dark" name="word" type="text" placeholder="Find a Word">
-                    </div>
+                <div class="word-search-modifiers is-flex is-justify-content-center">
+                    <form action="#" class="word-frequency-modifiers is-flex is-justify-content-center" id="find-word">
+                        <div class="select is-small is-dark mx-4">
+                            <input class="input is-small is-dark" name="word" type="text" placeholder="Find a Word">
+                        </div>
+                        <div class="buttons">
+                            <button class="search button is-small is-dark px-2" value="word_search">Search</button>
+                        </div>
+                    </form>
                     <div class="buttons mx-4">
-                        <button class="search button is-small is-dark px-2" value="word_search">Search</button>
+                        <button id="reset-find" class="search button is-small is-danger px-2"
+                            value="reset_find">Reset</button>
                     </div>
-                </form>
+                </div>
                 <div id="svganchor-find"></div>
                 <div id="checkboxes-find" class="is-small is-flex is-align-items-center">
                     <h6 class="mr-2 is-size-7">The Words:</h6>
