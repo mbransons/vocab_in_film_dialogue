@@ -87,8 +87,9 @@ const color_hexs =
 const color_hex_arr = color_hexs.split(' ');
 
 // declare data variable to assign value after data call
-let movies, decade;
+let moviesAll, movies, decade, wordCountList, platoon;
 
+// Genres
 function buildGenreCheckboxes(arr) {
   let genresCheckDiv = document.querySelector('.checkboxes-list');
   arr.forEach((g, i) => {
@@ -104,24 +105,7 @@ function buildGenreCheckboxes(arr) {
     genresCheckDiv.appendChild(genre);
   });
 }
-
-// build checkboxes
-` <span style="position:relative; top: 3px">Toggle Continents:&nbsp;&nbsp;</span>
-<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-    <input type="checkbox" value="africa" class="mdl-checkbox__input continent" checked="">Africa
-    <span class="mdl-checkbox__label" id="africaColor"
-        style="font-size: 20px; color: #1976D2;">&#9679;&nbsp;&nbsp;</span>
-</label>`;
-
-`<div class="field my-0 mx-1">
-<input class="is-checkradio has-background-color is-dark is-small" id="Comedy"
-    value="Comedy" type="checkbox" name="Comedy" checked="checked">
-<label for="Comedy" class="p-0 is-flex is-align-items-center"><span
-        class="ml-4 pl-1">Comedy</span><span id="comedyColor"
-        class="check-dot is-size-7 material-symbols-rounded ml-1">
-        circle
-    </span></label>
-</div>`;
+buildGenreCheckboxes(genre_cat_names);
 
 //data key names
 const sales = 'adjusted_gross';
@@ -165,32 +149,10 @@ chartState.legend = Legend.total;
 //Colors used for poster rect depending on genre
 const cat = d3.scaleOrdinal().range(color_hex_arr).domain(genre_cat_names);
 
-// Colors used for circles depending on continent
-let colors = d3
-  .scaleOrdinal()
-  .domain([
-    'asia',
-    'africa',
-    'northAmerica',
-    'europe',
-    'southAmerica',
-    'oceania',
-  ])
-  .range(['#D81B60', '#1976D2', '#388E3C', '#FBC02D', '#E64A19', '#455A64']);
-
-d3.select('#asiaColor').style('color', colors('asia'));
-d3.select('#africaColor').style('color', colors('africa'));
-d3.select('#northAmericaColor').style('color', colors('northAmerica'));
-d3.select('#southAmericaColor').style('color', colors('southAmerica'));
-d3.select('#europeColor').style('color', colors('europe'));
-d3.select('#oceaniaColor').style('color', colors('oceania'));
-
 let svg = d3
   .select('#svganchor')
   .append('svg')
   .attr('viewBox', [0, 0, width, height]);
-// .attr('width', width)
-// .attr('height', height);
 
 let xScale = d3.scaleLinear().range([margin.left, width - margin.right]);
 
@@ -244,6 +206,138 @@ const tip = d3
     return div;
   });
 svg.call(tip);
+
+// SEVEN DIRTY WORDS VISUALIZATION
+// set margins, width/height
+let sevenWordsDataArr;
+let seven = {
+  margin: { top: 0, right: 40, bottom: 34, left: 40 },
+  width: function () {
+    return 1300 - this.margin.left - this.margin.right;
+  },
+  height: function () {
+    return 900 - this.margin.top - this.margin.bottom;
+  },
+};
+
+// use viewBox rather than x and y values so that a aspect ratio is set and the visualization can be responsively scaled
+const svgSeven = d3
+  .select('#svganchor-seven')
+  .append('svg')
+  .attr(
+    'viewBox',
+    `0 0 ${seven.width() + seven.margin.left + seven.margin.right} ${
+      seven.height() + seven.margin.top + seven.margin.bottom
+    }`
+  );
+
+// Visualization
+// offset a group based on margins so that height and width can be used when building scales
+const gSeven = svgSeven
+  .append('g')
+  .attr('transform', `translate(${seven.margin.left}, ${seven.margin.top})`);
+const sevenWords = [
+  'shit',
+  'piss',
+  'fuck',
+  'cunt',
+  'cocksucker',
+  'motherfucker',
+  'tits',
+];
+const startDate = d3.timeDay.offset(parseYear(1967), -80);
+const endDate = d3.timeDay.offset(parseYear(2022), 80);
+const xSeven = d3
+  .scaleTime()
+  .range([0, seven.width()])
+  .domain([startDate, endDate]);
+const ySeven = d3.scaleLinear().range([seven.height(), 0]);
+const sevenColors = d3
+  .scaleOrdinal()
+  .range([
+    '#e41a1c',
+    '#377eb8',
+    '#4daf4a',
+    '#984ea3',
+    '#ff7f00',
+    '#ffff33',
+    '#a65628',
+  ])
+  .domain(sevenWords);
+
+// Seven Words Checkboxes
+function buildSevenCheckboxes(arr) {
+  let sevensCheckDiv = document.querySelector('.checkboxes-seven-list');
+  arr.forEach((s, i) => {
+    let seven = document.createElement('div');
+    seven.classList.add('field', 'my-0', 'mx-1');
+    seven.innerHTML = `<input class="is-checkradio has-background-color is-dark is-small" id=${s}
+    value=${s} type="checkbox" name=${s} checked="checked">
+<label for=${s} class="p-0 is-flex is-align-items-center"><span
+        class="ml-4 pl-1">${s}</span><span id="${s}Color"
+        class="check-dot is-size-7 material-symbols-rounded ml-1" style="color: ${sevenColors(
+          s
+        )};">
+        circle
+    </span></label>`;
+    sevensCheckDiv.appendChild(seven);
+  });
+}
+buildSevenCheckboxes(sevenWords);
+//Line Generator
+
+// X Axis
+const xAxisCallSeven = d3
+  .axisBottom(xSeven)
+  .ticks(30)
+  .tickFormat((d) => formatYear(d));
+
+gSeven
+  .append('g')
+  .attr('class', 'x axis')
+  .attr('transform', `translate(0, ${seven.height()})`)
+  .call(xAxisCallSeven);
+
+// SEVEN TOOLTIP
+// ToolTip;
+const tipSeven = d3
+  .tip()
+  .attr('class', 'd3-tip')
+  .html((event, d) => {
+    let div = `<div class="box box--tip p-3">
+  <article class="columns is-gapless is-mobile">
+    <div class="column is-4 mr-2">
+      <figure class="image">
+      <img src=${d.top_movie.posterURL}>
+      </figure>
+    </div>
+    <div class="column is-8">
+      <div class="content">
+      <table>
+      <tbody>
+        <tr>
+          <td class="p-1 has-text-weight-semibold is-uppercase is-size-7">${
+            d.top_movie.name
+          }
+          </td>
+        </tr>
+        <tr>
+          <td class="p-1 is-size-7">${formatTime(d.top_movie[date])} </td>
+        </tr>
+        <tr>
+          <td class="p-1 is-size-7">${d.word}: ${d3.format('~s')(
+      d.top_movie_count
+    )}</td>
+        </tr>
+      </tbody>
+    </table>
+      </div>
+    </div>
+  </article>
+</div>`;
+    return div;
+  });
+gSeven.call(tipSeven);
 
 //request to movie database to search for movie
 function search(movie) {
@@ -311,6 +405,7 @@ const dataCall = d3
     });
   })
   .then((movieData) => {
+    moviesAll = movieData;
     // dataSet = data
     //Decoade Select
     const decadeSelect = d3.select('.decade').on('change', redraw);
@@ -439,7 +534,101 @@ const dataCall = d3
         .duration(2000)
         .attr('transform', (d) => `translate(${d.x}, ${d.y})`);
     }
+
+    function buildSevenWords() {
+      sevenWordsDataArr = sevenWords.map((word) => {
+        return { word: word, data: aggCounts(word, moviesAll) };
+      });
+      // let maxCount = d3.max(fuck, (d) => d.year_count);
+      ySeven.domain([0, 200]);
+
+      // Line generator
+      const line = d3
+        .line()
+        .x((d) => xSeven(parseYear(d.year)))
+        .y((d) => ySeven(d.year_count));
+
+      // Y Axis
+      const yAxisCallSeven = d3
+        .axisLeft(ySeven)
+        .ticks(10)
+        .tickFormat((d) => `${d}`);
+
+      gSeven.append('g').attr('class', 'y axis').call(yAxisCallSeven);
+
+      gSeven
+        .selectAll('.word-seven-path')
+        .data(sevenWordsDataArr)
+        .enter()
+        .append('path')
+        .attr('id', (d) => d.word)
+        .attr('class', 'word-seven-path')
+        .attr('fill', 'none')
+        .attr('stroke', (d) => sevenColors(d.word))
+        .attr('stroke-width', 3)
+        .attr('d', (d) => line(d.data));
+
+      let hasSevenOnly = sevenWordsDataArr.map((word) => {
+        return {
+          word: word.word,
+          data: word.data.filter((y) => y.year_count > 0),
+        };
+      });
+      let hasSevenOnlySpread = hasSevenOnly.reduce((acc, word) => {
+        acc = [...acc, ...word.data];
+        return acc;
+      }, []);
+      gSeven
+        .selectAll('.word-peaks')
+        .data(hasSevenOnlySpread)
+        .enter()
+        .append('circle')
+        .attr('r', 4)
+        .attr('fill', (d) => sevenColors(d.word))
+        .attr('cx', (d) => xSeven(parseYear(d.year)))
+        .attr('cy', (d) => ySeven(d.year_count))
+        .on('mouseover', tipSeven.show)
+        .on('mouseout', tipSeven.hide);
+    }
+    buildSevenWords();
   });
+
+//Count occurences of a word within movie.Words obj
+function count(str, obj) {
+  let count = 0;
+  for (const word in obj) {
+    if (word.includes(str)) {
+      count += obj[word];
+    }
+  }
+  return { word: str, count: count };
+}
+
+//Aggregate counts of a searched word by year, save top movie and top movie count
+function aggCounts(str, arr) {
+  return arr.reduce((acc, movie) => {
+    let year = Number(formatYear(movie[date]));
+    if (acc.find((y) => y.year === year)) {
+      let obj = acc.find((y) => y.year === year);
+      let movie_data = count(str, movie.Words);
+      obj.year_count = obj.year_count + movie_data.count;
+      if (movie_data.count > obj.top_movie_count) {
+        obj.top_movie = movie;
+        obj.top_movie_count = movie_data.count;
+      }
+    } else {
+      let movie_data = count(str, movie.Words);
+      acc.push({
+        year: year,
+        word: str,
+        year_count: movie_data.count,
+        top_movie: movie,
+        top_movie_count: movie_data.count,
+      });
+    }
+    return acc;
+  }, []);
+}
 
 // Load and process data
 // d3.csv('../data/who_suicide_stats.csv')
