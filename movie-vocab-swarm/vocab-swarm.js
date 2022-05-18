@@ -842,39 +842,6 @@ function aggCounts(str, arr) {
   }, []);
 }
 
-// Load and process data
-// d3.csv('../data/who_suicide_stats.csv')
-//   .then(function (data) {
-//     let dataSet = data;
-
-//     // Set chart domain max value to the highest total value in data set
-//     xScale.domain(
-//       d3.extent(data, function (d) {
-//         return +d.total;
-//       })
-//     );
-
-//     redraw();
-
-//     // Listen to click on "total" and "per capita" buttons and trigger redraw when they are clicked
-//     d3.selectAll('.measure').on('click', function () {
-//       let thisClicked = this.value;
-//       chartState.measure = thisClicked;
-//       if (thisClicked === Count.total) {
-//         chartState.legend = Legend.total;
-//       }
-//       if (thisClicked === Count.perCap) {
-//         chartState.legend = Legend.perCap;
-//       }
-//       redraw();
-//     });
-
-//     // Listen to click on "scale" buttons and trigger redraw when they are clicked
-//     d3.selectAll('.scale').on('click', function () {
-//       chartState.scale = this.value;
-//       redraw(chartState.measure);
-//     });
-
 //     // Trigger filter function whenever checkbox is ticked/unticked
 //     d3.selectAll('input').on('change', filter);
 
