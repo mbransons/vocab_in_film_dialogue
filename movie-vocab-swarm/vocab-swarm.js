@@ -1,4 +1,5 @@
-let height = 700;
+// WORD FREQUENCY SWARM VISUALIZATION
+let height = 750;
 let width = 1300;
 let margin = { top: 0, right: 40, bottom: 34, left: 40 };
 
@@ -87,17 +88,17 @@ const color_hexs =
 const color_hex_arr = color_hexs.split(' ');
 
 // declare data variable to assign value after data call
-let moviesAll, movies, decade, wordCountList, platoon;
+let moviesAll, movies, decade, wordCountList;
 
-// Genres
+// Genres Checkbox Builder
 function buildGenreCheckboxes(arr) {
   let genresCheckDiv = document.querySelector('.checkboxes-list');
   arr.forEach((g, i) => {
     let genre = document.createElement('div');
     genre.classList.add('field', 'my-0', 'mx-1');
-    genre.innerHTML = `<input class="is-checkradio has-background-color is-dark is-small" id=${g}
-    value=${g} type="checkbox" name=${g} checked="checked">
-<label for=${g} class="p-0 is-flex is-align-items-center"><span
+    genre.innerHTML = `<input class="is-checkradio has-background-color is-dark is-small genre" id="${g}"
+    value="${g}" type="checkbox" name="${g}" checked="checked">
+<label for="${g}" class="p-0 is-flex is-align-items-center"><span
         class="ml-4 pl-1">${g}</span><span id="${g}Color"
         class="check-dot is-size-7 material-symbols-rounded ml-1" style="color: ${color_hex_arr[i]};">
         circle
@@ -122,7 +123,7 @@ const parseTime = d3.timeParse('%Y-%m-%d');
 const parseYear = d3.timeParse('%Y');
 const formatYear = d3.timeFormat('%Y');
 
-// Data structure describing chart scales
+// Data structure describing swarm chart scales
 let Scales = {
   lin: 'scaleLinear',
   log: 'scaleLog',
@@ -209,14 +210,14 @@ svg.call(tip);
 
 // SEVEN DIRTY WORDS VISUALIZATION
 // set margins, width/height
-let sevenWordsDataArr;
+let sevenWordsDataArr, sevenWordSet;
 let seven = {
   margin: { top: 10, right: 40, bottom: 34, left: 40 },
   width: function () {
     return 1300 - this.margin.left - this.margin.right;
   },
   height: function () {
-    return 900 - this.margin.top - this.margin.bottom;
+    return 700 - this.margin.top - this.margin.bottom;
   },
 };
 
@@ -257,18 +258,24 @@ const sevenColors = d3.scaleOrdinal().range(color_hex_arr).domain(sevenWords);
 // Seven Words Checkboxes
 function buildSevenCheckboxes(arr) {
   let sevensCheckDiv = document.querySelector('.checkboxes-seven-list');
-  arr.forEach((s, i) => {
+  arr.forEach((g, i) => {
     let seven = document.createElement('div');
-    seven.classList.add('field', 'my-0', 'mx-1');
-    seven.innerHTML = `<input class="is-checkradio has-background-color is-dark is-small" id=${s}
-    value=${s} type="checkbox" name=${s} checked="checked">
-<label for=${s} class="p-0 is-flex is-align-items-center"><span
-        class="ml-4 pl-1">${s}</span><span id="${s}Color"
-        class="check-dot is-size-7 material-symbols-rounded ml-1" style="color: ${sevenColors(
-          s
-        )};">
-        circle
-    </span></label>`;
+    seven.classList.add(
+      'field',
+      'my-0',
+      'mr-4',
+      'is-flex',
+      'is-align-items-center'
+    );
+    seven.innerHTML = `<input class=" is-small seven" id="${g}"
+        value="${g}" type="checkbox" name="${g}" checked="checked">
+<label for="${g}" class="checkbox p-0 is-flex is-align-items-center"><span
+    class="pl-1">${g}</span><span id="${g}Color"
+    class="check-dot is-size-6 material-symbols-rounded" style="color: ${sevenColors(
+      g
+    )};">
+    circle
+</span></label>`;
     sevensCheckDiv.appendChild(seven);
   });
 }
@@ -286,6 +293,8 @@ gSeven
   .attr('class', 'x axis')
   .attr('transform', `translate(0, ${seven.height()})`)
   .call(xAxisCallSeven);
+
+let yAxisSeven = gSeven.append('g').attr('class', 'y axis');
 
 // SEVEN TOOLTIP
 // ToolTip;
@@ -348,7 +357,7 @@ let findWord = {
     return 1300 - this.margin.left - this.margin.right;
   },
   height: function () {
-    return 900 - this.margin.top - this.margin.bottom;
+    return 600 - this.margin.top - this.margin.bottom;
   },
 };
 
@@ -378,7 +387,7 @@ const xFind = d3
   .scaleTime()
   .range([0, findWord.width()])
   .domain([startDateFind, endDateFind]);
-const yFind = d3.scaleLinear().range([findWord.height(), 0]);
+const yFind = d3.scaleLinear().range([findWord.height(), 0]).domain([0, 10]);
 const findColors = d3.scaleOrdinal().range(color_hex_arr);
 
 //Line Generator
@@ -395,7 +404,9 @@ gFind
   .attr('transform', `translate(0, ${findWord.height()})`)
   .call(xAxisCallFind);
 
-// SEVEN TOOLTIP
+let yAxisFind = gFind.append('g').attr('class', 'y axis').call(yFind);
+
+// Word Find TOOLTIP
 // ToolTip;
 const tipFind = d3
   .tip()
@@ -447,6 +458,7 @@ const tipFind = d3
   });
 gFind.call(tipFind);
 
+// THE MOVIE DATABASE DATA REQUEST
 //request to movie database to search for movie
 function search(movie) {
   let movieTitle = movie.Title;
@@ -478,6 +490,7 @@ async function fetchMovies(data) {
   return await Promise.all(promises);
 }
 
+// DATA REQUEST AND FILTERS USED FOR ALL VISUALIZATIONS
 // call data
 const dataCall = d3
   .json('../data/final_movies_combined_adjusted.json', d3.autoType)
@@ -489,11 +502,12 @@ const dataCall = d3
     return data;
   })
   .then((data) => {
+    // get tmdb data for movies
     const promises = fetchMovies(data);
     return Promise.all([data, promises]);
   })
   .then(([movies, tmdb_movies]) => {
-    // set posterURL from the promise value to the returned value
+    // add tmdb data to data set
     return movies.map((movie, i) => {
       movie.posterURL = !tmdb_movies[i].poster_path
         ? 'img/no-poster-movie.png'
@@ -514,13 +528,14 @@ const dataCall = d3
   })
   .then((movieData) => {
     moviesAll = movieData;
-    // dataSet = data
-    //Decoade Select
+
+    //SWARM VISUALIZATION
+    //Decade Select
     const decadeSelect = d3.select('.decade').on('change', redraw);
     // set min/max values from data set
     // Set chart domain max value to the highest total value in data set
     xScale.domain(
-      d3.extent(movieData, function (d) {
+      d3.extent(moviesAll, function (d) {
         return +d[wordTotal];
       })
     );
@@ -540,12 +555,16 @@ const dataCall = d3
       redraw();
     });
 
+    d3.selectAll('.genre').on('change', function () {
+      filter('.genre');
+    });
+
     function redraw() {
       // Set decade
       decade = Number(decadeSelect.node().value.slice(0, 4));
       let startYear = parseYear(decade);
       let finishYear = parseYear(decade + 10);
-      movies = movieData.filter((m) => {
+      movies = moviesAll.filter((m) => {
         return m[date] > startYear && m[date] < finishYear;
       });
       // Set scale type based on button clicked
@@ -592,7 +611,7 @@ const dataCall = d3
             .strength(2)
         ) // Increase velocity
         .force('y', d3.forceY(height / 2 - margin.bottom / 2)) // // Apply positioning force to push nodes towards center along Y axis
-        .force('collide', d3.forceCollide(25)) // Apply collision force with radius of 9 - keeps nodes centers 9 pixels apart
+        .force('collide', d3.forceCollide(28)) // Apply collision force with radius of 30 - keeps nodes centers 30 pixels apart
         .stop(); // Stop simulation from starting automatically
 
       // Manually run simulation
@@ -621,8 +640,8 @@ const dataCall = d3
 
       postersEnter
         .append('rect')
-        .attr('width', '20')
-        .attr('height', '30')
+        .attr('width', '26')
+        .attr('height', '39')
         .attr('fill', (d) => cat(d.genres[0]))
         .attr('stroke', (d) => cat(d.genres[0]))
         .attr('stroke-width', '6px');
@@ -630,8 +649,8 @@ const dataCall = d3
       postersEnter
         .append('svg:image')
         .attr('xlink:href', (d) => d.posterURL)
-        .attr('width', '20')
-        .attr('height', '30')
+        .attr('width', '26')
+        .attr('height', '39')
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
 
@@ -643,12 +662,73 @@ const dataCall = d3
         .attr('transform', (d) => `translate(${d.x}, ${d.y})`);
     }
 
+    function filter(cat) {
+      let checkedBoxes = getCheckedBoxes(cat);
+      console.log(checkedBoxes);
+
+      let newData = [];
+
+      if (checkedBoxes == null) {
+        if (cat === '.genre') {
+          moviesAll = newData;
+          redraw();
+          return;
+        } else if (cat === '.find') {
+          findWordSet = newData;
+          buildFindWords();
+          return;
+        } else {
+          sevenWordSet = newData;
+          buildSevenWords();
+          return;
+        }
+      }
+
+      if (cat === '.genre') {
+        let newArray = movieData.filter((m) => {
+          return m.genres.some((g) => {
+            return checkedBoxes.includes(g);
+          });
+        });
+
+        moviesAll = newArray;
+        redraw();
+      } else if (cat === '.seven') {
+        let newArray = sevenWordsDataArr.filter((w) =>
+          checkedBoxes.includes(w.word)
+        );
+        sevenWordSet = newArray;
+        buildSevenWords();
+      } else if (cat === '.find') {
+        let newArray = findWordsDataArr().filter((w) =>
+          checkedBoxes.includes(w.word)
+        );
+        findWordSet = newArray;
+        buildFindWords();
+      }
+    }
+
+    // SEVEN WORDS VISUALIZATION
+
+    d3.selectAll('.seven').on('change', function () {
+      filter('.seven');
+    });
+    // console.log(sevenCats);
+    // generate arrays of word counts for each of the seven words
+    sevenWordsDataArr = sevenWords.map((word) => {
+      return { word: word, data: aggCounts(word, movieData) };
+    });
+
+    sevenWordSet = sevenWordsDataArr;
+
     function buildSevenWords() {
-      sevenWordsDataArr = sevenWords.map((word) => {
-        return { word: word, data: aggCounts(word, moviesAll) };
-      });
-      // let maxCount = d3.max(fuck, (d) => d.year_count);
-      ySeven.domain([0, 200]);
+      // find max word count across all seven word count sets
+      let maxWordCount = d3.max(
+        sevenWordSet.map((w) => {
+          return d3.max(w.data, (d) => d.year_count);
+        })
+      );
+      ySeven.domain([0, maxWordCount]);
 
       // Line generator
       const line = d3
@@ -662,21 +742,31 @@ const dataCall = d3
         .ticks(10)
         .tickFormat((d) => `${d}`);
 
-      gSeven.append('g').attr('class', 'y axis').call(yAxisCallSeven);
+      const t = d3.transition().duration(1000);
 
-      gSeven
+      yAxisSeven.transition(t).call(yAxisCallSeven);
+
+      let wordLine = gSeven
         .selectAll('.word-seven-path')
-        .data(sevenWordsDataArr)
+        .data(sevenWordSet, (d) => d.data);
+
+      wordLine.exit().remove();
+
+      wordLineEnter = wordLine
         .enter()
         .append('path')
-        .attr('id', (d) => d.word)
         .attr('class', 'word-seven-path')
         .attr('fill', 'none')
+        .attr('stroke-width', 3);
+
+      wordLineEnter
+        .merge(wordLine)
+        .transition(t)
+        .attr('id', (d) => d.word)
         .attr('stroke', (d) => sevenColors(d.word))
-        .attr('stroke-width', 3)
         .attr('d', (d) => line(d.data));
 
-      let hasSevenOnly = sevenWordsDataArr.map((word) => {
+      let hasSevenOnly = sevenWordSet.map((word) => {
         return {
           word: word.word,
           data: word.data.filter((y) => y.year_count > 0),
@@ -686,26 +776,42 @@ const dataCall = d3
         acc = [...acc, ...word.data];
         return acc;
       }, []);
-      gSeven
+
+      let peaks = gSeven
         .selectAll('.word-peaks')
-        .data(hasSevenOnlySpread)
+        .data(hasSevenOnlySpread, (d) => parseYear(d.year));
+
+      peaks.exit().remove();
+
+      peaksEnter = peaks
         .enter()
         .append('circle')
+        .attr('class', 'word-peaks')
         .attr('r', 4)
+        .on('mouseover', tipSeven.show)
+        .on('mouseout', tipSeven.hide);
+
+      peaksEnter
+        .merge(peaks)
         .attr('fill', (d) => sevenColors(d.word))
         .attr('cx', (d) => xSeven(parseYear(d.year)))
         .attr('cy', (d) => ySeven(d.year_count))
-        .on('mouseover', tipSeven.show)
-        .on('mouseout', tipSeven.hide);
+        .style('opacity', 0)
+        .transition()
+        .duration(500)
+        .delay(500)
+        .style('opacity', 1);
     }
     buildSevenWords();
 
+    // FIND WORDS VISULIZATION
     const findWordForm = document.querySelector('#find-word');
     findWordForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const wordInput = findWordForm.elements.word;
       console.log(wordInput.value);
       findWords.push(wordInput.value.toLowerCase());
+      findWordSet = findWordsDataArr();
       buildFindWords();
       wordInput.value = '';
     });
@@ -724,12 +830,20 @@ const dataCall = d3
       }
     });
 
-    function buildFindWords() {
-      findWordsDataArr = findWords.map((word) => {
-        return { word: word, data: aggCounts(word, moviesAll) };
+    findWordsDataArr = () =>
+      findWords.map((word) => {
+        return { word: word, data: aggCounts(word, movieData) };
       });
 
-      yFind.domain([0, 200]);
+    function buildFindWords() {
+      let maxWordCount = d3.max(
+        findWordSet.map((w) => {
+          return d3.max(w.data, (d) => d.year_count);
+        })
+      );
+
+      yFind.domain([0, maxWordCount]);
+
       findColors.domain(findWords);
       // Line generator
       const line = d3
@@ -737,73 +851,117 @@ const dataCall = d3
         .x((d) => xFind(parseYear(d.year)))
         .y((d) => yFind(d.year_count));
 
+      const t = d3.transition().duration(1000);
       // Y Axis
       const yAxisCallFind = d3
         .axisLeft(yFind)
         .ticks(10)
         .tickFormat((d) => `${d}`);
 
-      gFind.append('g').attr('class', 'y axis').call(yAxisCallFind);
+      yAxisFind.transition(t).call(yAxisCallFind);
 
-      gFind
+      let wordLine = gFind
         .selectAll('.word-find-path')
-        .data(findWordsDataArr)
+        .data(findWordSet, (d) => d.data);
+
+      wordLine.exit().remove();
+
+      wordLineEnter = wordLine
         .enter()
         .append('path')
-        .attr('id', (d) => d.word)
         .attr('class', 'word-find-path')
         .attr('fill', 'none')
+        .attr('stroke-width', 3);
+
+      wordLineEnter
+        .merge(wordLine)
+        .transition(t)
+        .attr('id', (d) => d.word)
         .attr('stroke', (d) => findColors(d.word))
-        .attr('stroke-width', 3)
         .attr('d', (d) => line(d.data));
 
-      let hasFindOnly = findWordsDataArr.map((word) => {
+      // filters out years where there is no count for word
+      let hasFindOnly = findWordSet.map((word) => {
         return {
           word: word.word,
           data: word.data.filter((y) => y.year_count > 0),
         };
       });
+
+      //spreads out all the counts for a particular word into a single array
       let hasFindOnlySpread = hasFindOnly.reduce((acc, word) => {
         acc = [...acc, ...word.data];
         return acc;
       }, []);
-      gFind
+
+      let peaks = gFind
         .selectAll('.find-word-peak')
-        .data(hasFindOnlySpread)
+        .data(hasFindOnlySpread, (d) => parseYear(d.year));
+
+      peaks.exit().remove();
+
+      peaksEnter = peaks
         .enter()
         .append('circle')
         .attr('class', 'find-word-peak')
         .attr('r', 4)
-        .attr('fill', (d) => findColors(d.word))
-        .attr('cx', (d) => xFind(parseYear(d.year)))
-        .attr('cy', (d) => yFind(d.year_count))
         .on('mouseover', tipFind.show)
         .on('mouseout', tipFind.hide);
 
-      // Find Words Checkboxes
+      peaksEnter
+        .merge(peaks)
+        .attr('fill', (d) => findColors(d.word))
+        .attr('cx', (d) => xFind(parseYear(d.year)))
+        .attr('cy', (d) => yFind(d.year_count))
+        .style('opacity', 0)
+        .transition()
+        .duration(500)
+        .delay(500)
+        .style('opacity', 1);
+
+      // Build Find Words Checkboxes
       function buildFindCheckboxes(arr) {
         let findCheckDiv = document.querySelector('.checkboxes-find-list');
-        while (findCheckDiv.firstChild) {
-          findCheckDiv.removeChild(findCheckDiv.firstChild);
-        }
-        arr.forEach((f, i) => {
+        let checkboxNum = d3.selectAll('.find')._groups[0].length;
+        if (checkboxNum < arr.length) {
+          let g = arr[arr.length - 1];
           let find = document.createElement('div');
-          find.classList.add('field', 'my-0', 'mx-1');
-          find.innerHTML = `<input class="is-checkradio has-background-color is-dark is-small" id=${f}
-        value=${f} type="checkbox" name=${f} checked="checked">
-        <label for=${f} class="p-0 is-flex is-align-items-center"><span
-        class="ml-4 pl-1">${f}</span><span id="${f}Color"
-        class="check-dot is-size-7 material-symbols-rounded ml-1" style="color: ${findColors(
-          f
-        )};">
-        circle
-        </span></label>`;
+          find.classList.add(
+            'field',
+            'my-0',
+            'mr-4',
+            'is-flex',
+            'is-align-items-center'
+          );
+          find.innerHTML = `<input class=" is-small find" id="${g}"
+          value="${g}" type="checkbox" name="${g}" checked="checked">
+  <label for="${g}" class="checkbox p-0 is-flex is-align-items-center"><span
+      class="pl-1">${g}</span><span id="${g}Color"
+      class="check-dot is-size-6 material-symbols-rounded" style="color: ${findColors(
+        g
+      )};">
+      circle
+  </span></label>`;
           findCheckDiv.appendChild(find);
-        });
+        }
       }
       buildFindCheckboxes(findWords);
+      d3.selectAll('.find').on('change', function () {
+        filter('.find');
+      });
     }
   });
+
+function getCheckedBoxes(checkboxName) {
+  let checkboxes = d3.selectAll(checkboxName).nodes();
+  let checkboxesChecked = [];
+  for (let i = 0; i < checkboxes.length; i++) {
+    if (checkboxes[i].checked) {
+      checkboxesChecked.push(checkboxes[i].defaultValue);
+    }
+  }
+  return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+}
 
 //Count occurences of a word within movie.Words obj
 function count(str, obj) {
