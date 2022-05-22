@@ -84,7 +84,7 @@ const genre_cat = [
 const genre_cat_names = genre_cat.map((g) => g.name);
 
 const color_hexs =
-  '#B71C1C #EF9A9A #558B2F #e3d342 #4A148C #CE93D8 #00695C #C5E1A5 #283593 #9FA8DA #0277BD #81D4FA #80CBC4 #F9A825 #FFCC80 #E65100 #5D4037 #757575 #FFAB91';
+  '#B71C1C #EF9A9A #CE93D8 #C5E1A5 #9FA8DA #0277BD #81D4FA #80CBC4 #F9A825 #FFCC80 #E65100 #558B2F #5D4037 #4A148C #00695C #283593 #e3d342 #757575 #FFAB91';
 const color_hex_arr = color_hexs.split(' ');
 
 // declare data variable to assign value after data call
@@ -852,6 +852,7 @@ const dataCall = d3
     const resetFind = document.querySelector('#reset-find');
     resetFind.addEventListener('click', function () {
       findWords = [];
+      findWordSet = findWordsDataArr();
       buildFindWords();
       let paths = document.querySelectorAll('.word-find-path');
       let nodes = document.querySelectorAll('.find-word-peak');
