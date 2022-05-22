@@ -7,7 +7,7 @@ test_srts/*
 prob_srts/*
 more_prob_srts/*
 notebooks/*
-movie_gross_distributions/
+movie_gross_distributions/*
 
 # exception to the rule
 !srts/.gitkeep
