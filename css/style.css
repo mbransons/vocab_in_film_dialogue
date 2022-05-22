@@ -14,3 +14,7 @@ body {
 .strike {
   text-decoration: line-through;
 }
+
+.has-border-bottom {
+  border-bottom: 1px solid #363636;
+}
