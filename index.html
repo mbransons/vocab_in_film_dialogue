@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Vocab Swarm</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+    <link rel="stylesheet" href="css/bulma.min.css">
+    <link rel="stylesheet" href="css/bulma-checkradio.min.css">
+    <link rel="stylesheet" href="css/d3-tip.min.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <section class="chart-section">
+        <div class="columns">
+            <div class="column is-full is-8 is-offset-2">
+                <div class="py-4">
+                    <h2 class="has-text-centered is-size-4 heading">English Word Diversity in Top American Films</h2>
+                </div>
+                <div class="word-frequency-modifiers is-flex is-justify-content-center">
+                    <div class="buttons mx-4">
+                        <button class="measure button is-small is-dark px-2" value="word_counts">Total Unique
+                            Words</button>
+                        <button class="measure button is-small is-dark px-2" value="count_per_hour">Unique Words per
+                            Hour</button>
+                    </div>
+                    <div class="select is-small is-dark mx-4">
+                        <select class="decade">
+                            <option>1920s</option>
+                            <option>1930s</option>
+                            <option>1940s</option>
+                            <option>1950s</option>
+                            <option>1960s</option>
+                            <option>1970s</option>
+                            <option selected>1980s</option>
+                            <option>1990s</option>
+                            <option>2000s</option>
+                            <option>2010s</option>
+                            <option>2020s</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="svganchor"></div>
+                <div id="checkboxes" class="is-small is-flex is-align-items-center">
+                    <h6 class="mr-2 is-size-7">Toggle Genres:</h6>
+                    <div class="checkboxes-list is-small is-flex is-align-items-center is-flex-wrap-wrap">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="text-section">
+        <div class="columns mt-5">
+            <div class="column p-5 is-5 is-offset-1">
+                <div class="content">
+                    <h3>Notes</h3>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus maiores, sapiente in voluptatum
+                        aperiam accusamus incidunt omnis, fuga repellendus itaque minima delectus rerum? Adipisci at vel
+                        atque maxime blanditiis odio.
+                    </p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque recusandae animi quo minus
+                        blanditiis modi harum, voluptates mollitia assumenda est officiis labore eius laudantium ipsa
+                        tenetur corrupti ipsam odit quibusdam!
+                    </p>
+                </div>
+            </div>
+            <div class="column p-5 is-5">
+                <div class="content">
+                    <h3>References</h3>
+                    <ul>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="chart-section">
+        <div class="columns">
+            <div class="column is-full is-8 is-offset-2">
+                <div class="py-4">
+                    <h2 class="has-text-centered is-size-4 heading">The Seven Dirty Words</h2>
+                </div>
+
+                <div id="svganchor-seven"></div>
+                <div id="checkboxes-seven" class="is-small is-flex is-align-items-center">
+                    <h6 class="mr-2 is-size-7">The Seven:</h6>
+                    <div class="checkboxes-seven-list is-small is-flex is-align-items-center is-flex-wrap-wrap">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="text-section">
+        <div class="columns mt-5">
+            <div class="column p-5 is-5 is-offset-1">
+                <div class="content">
+                    <h3>Notes</h3>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus maiores, sapiente in voluptatum
+                        aperiam accusamus incidunt omnis, fuga repellendus itaque minima delectus rerum? Adipisci at vel
+                        atque maxime blanditiis odio.
+                    </p>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque recusandae animi quo minus
+                        blanditiis modi harum, voluptates mollitia assumenda est officiis labore eius laudantium ipsa
+                        tenetur corrupti ipsam odit quibusdam!
+                    </p>
+                </div>
+            </div>
+            <div class="column p-5 is-5">
+                <div class="content">
+                    <h3>References</h3>
+                    <ul>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="chart-section">
+        <div class="columns">
+            <div class="column is-full is-8 is-offset-2">
+                <div class="py-4">
+                    <h2 class="has-text-centered is-size-4 heading">Find Word Frequencies in Top Ten Films</h2>
+                </div>
+                <div class="word-search-modifiers is-flex is-justify-content-center">
+                    <form action="#" class="word-frequency-modifiers is-flex is-justify-content-center" id="find-word">
+                        <div class="select is-small is-dark mx-4">
+                            <input class="input is-small is-dark" name="word" type="text" placeholder="Find a Word">
+                        </div>
+                        <div class="buttons">
+                            <button class="search button is-small is-dark px-2" value="word_search">Search</button>
+                        </div>
+                    </form>
+                    <div class="buttons mx-4">
+                        <button id="reset-find" class="search button is-small is-danger px-2"
+                            value="reset_find">Reset</button>
+                    </div>
+                </div>
+                <div id="svganchor-find"></div>
+                <div id="checkboxes-find" class="is-small is-flex is-align-items-center">
+                    <h6 class="mr-2 is-size-7">The Words:</h6>
+                    <div class="checkboxes-find-list is-small is-flex is-align-items-center is-flex-wrap-wrap">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.0/axios.min.js"></script>
+<script src="./lib/d3.min.7.2.js"></script>
+<script src="./lib/d3-v6-tip.js"></script>
+<script src="./js/app.js"></script>
+
+</html>
