@@ -1,6 +1,4 @@
-movie-vocab-swarm/bees.html
-movie-vocab-swarm/beeswarm.js
-
+.DS_Store
 
 
 # exclude everything
@@ -8,9 +6,8 @@ srts/*
 test_srts/*
 prob_srts/*
 more_prob_srts/*
-movie_gross_distributions
+notebooks/*
+movie_gross_distributions/
 
 # exception to the rule
-!srts/.gitkeep 
-data_check.ipynb
-film_data_rework.ipynb
+!srts/.gitkeep
