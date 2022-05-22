@@ -88,7 +88,7 @@ const color_hexs =
 const color_hex_arr = color_hexs.split(' ');
 
 // declare data variable to assign value after data call
-let moviesAll, movies, decade, wordCountList;
+let moviesAll, movies, decade, wordCountList, checkedBoxes;
 
 // Genres Checkbox Builder
 function buildGenreCheckboxes(arr) {
@@ -663,7 +663,7 @@ const dataCall = d3
     }
 
     function filter(cat) {
-      let checkedBoxes = getCheckedBoxes(cat);
+      checkedBoxes = getCheckedBoxes(cat);
       console.log(checkedBoxes);
 
       let newData = [];
@@ -812,6 +812,39 @@ const dataCall = d3
       console.log(wordInput.value);
       findWords.push(wordInput.value.toLowerCase());
       findWordSet = findWordsDataArr();
+      // Build Find Words Checkboxes
+      function buildFindCheckboxes(arr) {
+        findCheckDiv = document.querySelector('.checkboxes-find-list');
+        let checkboxNum = d3.selectAll('.find')._groups[0].length;
+        if (checkboxNum < arr.length) {
+          let g = arr[arr.length - 1];
+          let find = document.createElement('div');
+          find.classList.add(
+            'field',
+            'my-0',
+            'mr-4',
+            'is-flex',
+            'is-align-items-center'
+          );
+          find.innerHTML = `<input class=" is-small find" id="${g}"
+          value="${g}" type="checkbox" name="${g}" checked="checked">
+  <label for="${g}" class="checkbox p-0 is-flex is-align-items-center"><span
+      class="pl-1">${g}</span><span id="${g}Color"
+      class="check-dot is-size-6 material-symbols-rounded" style="color: ${findColors(
+        g
+      )};">
+      circle
+  </span></label>`;
+          findCheckDiv.appendChild(find);
+        }
+      }
+      buildFindCheckboxes(findWords);
+      d3.selectAll('.find').on('change', function () {
+        filter('.find');
+      });
+      if (checkedBoxes) {
+        filter('.find');
+      }
       buildFindWords();
       wordInput.value = '';
     });
@@ -921,37 +954,6 @@ const dataCall = d3
         .duration(500)
         .delay(500)
         .style('opacity', 1);
-
-      // Build Find Words Checkboxes
-      function buildFindCheckboxes(arr) {
-        findCheckDiv = document.querySelector('.checkboxes-find-list');
-        let checkboxNum = d3.selectAll('.find')._groups[0].length;
-        if (checkboxNum < arr.length) {
-          let g = arr[arr.length - 1];
-          let find = document.createElement('div');
-          find.classList.add(
-            'field',
-            'my-0',
-            'mr-4',
-            'is-flex',
-            'is-align-items-center'
-          );
-          find.innerHTML = `<input class=" is-small find" id="${g}"
-          value="${g}" type="checkbox" name="${g}" checked="checked">
-  <label for="${g}" class="checkbox p-0 is-flex is-align-items-center"><span
-      class="pl-1">${g}</span><span id="${g}Color"
-      class="check-dot is-size-6 material-symbols-rounded" style="color: ${findColors(
-        g
-      )};">
-      circle
-  </span></label>`;
-          findCheckDiv.appendChild(find);
-        }
-      }
-      buildFindCheckboxes(findWords);
-      d3.selectAll('.find').on('change', function () {
-        filter('.find');
-      });
     }
   });
 
@@ -1002,61 +1004,3 @@ function aggCounts(str, arr) {
     return acc;
   }, []);
 }
-
-//     // Trigger filter function whenever checkbox is ticked/unticked
-//     d3.selectAll('input').on('change', filter);
-
-//     function redraw() {
-//       // Set scale type based on button clicked
-//       if (chartState.scale === Scales.lin) {
-//         xScale = d3.scaleLinear().range([margin.left, width - margin.right]);
-//       }
-
-//       if (chartState.scale === Scales.log) {
-//         xScale = d3.scaleLog().range([margin.left, width - margin.right]);
-//       }
-
-//       // sets domain as total or per capita
-//       xScale.domain(
-//         d3.extent(dataSet, function (d) {
-//           return +d[chartState.measure];
-//         })
-//       );
-
-//     // Filter data based on which checkboxes are ticked
-//     function filter() {
-//       function getCheckedBoxes(checkboxName) {
-//         let checkboxes = d3.selectAll(checkboxName).nodes();
-//         let checkboxesChecked = [];
-//         for (let i = 0; i < checkboxes.length; i++) {
-//           if (checkboxes[i].checked) {
-//             checkboxesChecked.push(checkboxes[i].defaultValue);
-//           }
-//         }
-//         return checkboxesChecked.length > 0 ? checkboxesChecked : null;
-//       }
-
-//       let checkedBoxes = getCheckedBoxes('.continent');
-
-//       let newData = [];
-
-//       if (checkedBoxes == null) {
-//         dataSet = newData;
-//         redraw();
-//         return;
-//       }
-
-//       for (let i = 0; i < checkedBoxes.length; i++) {
-//         let newArray = data.filter(function (d) {
-//           return d.continent === checkedBoxes[i];
-//         });
-//         Array.prototype.push.apply(newData, newArray);
-//       }
-
-//       dataSet = newData;
-//       redraw();
-//     }
-//   })
-//   .catch(function (error) {
-//     if (error) throw error;
-//   });
