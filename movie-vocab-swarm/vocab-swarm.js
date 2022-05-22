@@ -84,7 +84,7 @@ const genre_cat = [
 const genre_cat_names = genre_cat.map((g) => g.name);
 
 const color_hexs =
-  '#B71C1C #EF9A9A #4A148C #CE93D8 #283593 #9FA8DA #0277BD #81D4FA #80CBC4 #00695C #C5E1A5 #558B2F #FFF59D #F9A825 #FFCC80 #E65100 #5D4037 #757575 #FFAB91';
+  '#B71C1C #EF9A9A #558B2F #e3d342 #4A148C #CE93D8 #00695C #C5E1A5 #283593 #9FA8DA #0277BD #81D4FA #80CBC4 #F9A825 #FFCC80 #E65100 #5D4037 #757575 #FFAB91';
 const color_hex_arr = color_hexs.split(' ');
 
 // declare data variable to assign value after data call
@@ -350,7 +350,7 @@ gSeven.call(tipSeven);
 
 // SEARCH WORDS VISUALIZATION
 // set margins, width/height
-let wordFindDataArr;
+let wordFindDataArr, findCheckDiv;
 let findWord = {
   margin: { top: 10, right: 40, bottom: 34, left: 40 },
   width: function () {
@@ -493,7 +493,7 @@ async function fetchMovies(data) {
 // DATA REQUEST AND FILTERS USED FOR ALL VISUALIZATIONS
 // call data
 const dataCall = d3
-  .json('../data/final_movies_combined_adjusted.json', d3.autoType)
+  .json('../data/final_movies.json', d3.autoType)
   .then((data) => {
     data.forEach((movie) => {
       movie['Year'] = parseYear(movie['Year']);
@@ -828,6 +828,9 @@ const dataCall = d3
       for (let node of nodes) {
         node.remove();
       }
+      while (findCheckDiv.firstChild) {
+        findCheckDiv.removeChild(findCheckDiv.firstChild);
+      }
     });
 
     findWordsDataArr = () =>
@@ -921,7 +924,7 @@ const dataCall = d3
 
       // Build Find Words Checkboxes
       function buildFindCheckboxes(arr) {
-        let findCheckDiv = document.querySelector('.checkboxes-find-list');
+        findCheckDiv = document.querySelector('.checkboxes-find-list');
         let checkboxNum = d3.selectAll('.find')._groups[0].length;
         if (checkboxNum < arr.length) {
           let g = arr[arr.length - 1];
