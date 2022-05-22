@@ -18,3 +18,7 @@ body {
 .has-border-bottom {
   border-bottom: 1px solid #363636;
 }
+
+.has-border-top {
+  border-top: 1px solid #363636;
+}
