@@ -1,6 +1,5 @@
 .DS_Store
 
-
 # exclude everything
 srts/*
 test_srts/*
