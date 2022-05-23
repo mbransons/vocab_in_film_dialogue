@@ -137,8 +137,8 @@ let Count = {
 
 // Data structure describing legend fields value
 let Legend = {
-  total: 'Total Words',
-  perCap: 'Words per Hour',
+  total: 'total unique words',
+  perCap: 'unique words per hour',
 };
 
 let chartState = {};
